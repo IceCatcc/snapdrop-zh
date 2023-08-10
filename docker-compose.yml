@@ -3,6 +3,9 @@ services:
   node:
     image: "node:lts-alpine"
     user: "node"
+    environment:
+      - PUID=1000
+      - PGID=1000
     working_dir: /home/node/app
     volumes:
       - ./server/:/home/node/app

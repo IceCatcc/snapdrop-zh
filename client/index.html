@@ -94,6 +94,22 @@
       </x-paper>
     </x-background>
   </x-dialog>
+  <!-- Change Name Dialog -->
+  <x-dialog id="changeDisplayNameDialog">
+    <form action="#">
+      <x-background class="full center">
+        <x-paper shadow="2">
+          <h3>修改名称</h3>
+          <input id="textInput" class="textarea" role="textbox" placeholder="新名称" autocomplete="off" autofocus
+            contenteditable></input>
+          <div class="row-reverse">
+            <button class="button" type="submit" close>修改</button>
+            <a class="button" close>取消</a>
+          </div>
+        </x-paper>
+      </x-background>
+    </form>
+  </x-dialog>
   <!-- Send Text Dialog -->
   <x-dialog id="sendTextDialog">
     <form action="#">

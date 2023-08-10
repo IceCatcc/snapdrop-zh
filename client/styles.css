@@ -312,6 +312,18 @@ footer .logo {
     color: var(--primary-color);
 }
 
+footer #displayName{
+  cursor: pointer;
+}
+
+footer #displayName .name-value{
+  color:aquamarine
+}
+
+footer #displayName .name-value:hover{
+  color:aqua
+}
+
 footer .font-body2 {
     color: var(--primary-color);
 }
@@ -481,6 +493,7 @@ button::-moz-focus-inner {
 /* Text Input */
 
 .textarea {
+    width: 100%;
     box-sizing: border-box;
     border: none;
     outline: none;

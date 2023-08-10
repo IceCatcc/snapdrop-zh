@@ -9,8 +9,12 @@ window.iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 Events.on('display-name', e => {
   const me = e.detail.message;
   const $displayName = $('displayName')
-  $displayName.textContent = '你会在网络中被标识成' + me.displayName;
-  $displayName.title = me.deviceName;
+  $displayName.innerHTML = `你会在网络中被标识成 <b class="name-value">${me.displayName}</b>`;
+  //$displayName.title = me.deviceName;
+  $displayName.title = '点击更改自己的标识名称'
+  $displayName.onclick = () => {
+    Events.fire('show-change-display-name');
+  }
 });
 
 class PeersUI {
@@ -18,6 +22,7 @@ class PeersUI {
   constructor() {
     Events.on('peer-joined', e => this._onPeerJoined(e.detail));
     Events.on('peer-left', e => this._onPeerLeft(e.detail));
+    Events.on('peer-name-changed', e => this._changedotherpeerdisplayname(e.detail));
     Events.on('peers', e => this._onPeers(e.detail));
     Events.on('file-progress', e => this._onFileProgress(e.detail));
     Events.on('paste', e => this._onPaste(e));
@@ -28,6 +33,10 @@ class PeersUI {
     const peerUI = new PeerUI(peer);
     $$('x-peers').appendChild(peerUI.$el);
     setTimeout(e => window.animateBackground(false), 1750); // Stop animation
+  }
+
+  _changedotherpeerdisplayname(peer) {
+    $(peer.id).getElementsByClassName('name')[0].innerText = peer.name.displayName
   }
 
   _onPeers(peers) {
@@ -309,6 +318,24 @@ class ReceiveDialog extends Dialog {
   }
 }
 
+class ChangeDisplayNameDialog extends Dialog {
+  constructor() {
+    super('changeDisplayNameDialog');
+    Events.on('show-change-display-name', () => this.show())
+    this.$text = this.$el.querySelector('#textInput');
+    const button = this.$el.querySelector('form');
+    button.addEventListener('submit', e => this._send(e));
+  }
+
+  _send(e) {
+    e.preventDefault();
+    Events.fire('change-display-name', {
+      to: this._recipient,
+      text: this.$text.value
+    });
+  }
+}
+
 
 class SendTextDialog extends Dialog {
   constructor() {
@@ -533,6 +560,7 @@ class Snapdrop {
     const peersUI = new PeersUI();
     Events.on('load', e => {
       const receiveDialog = new ReceiveDialog();
+      const changeDisplayNameDialog = new ChangeDisplayNameDialog();
       const sendTextDialog = new SendTextDialog();
       const receiveTextDialog = new ReceiveTextDialog();
       const toast = new Toast();

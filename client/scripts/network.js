@@ -7,6 +7,8 @@ class ServerConnection {
     this._connect();
     Events.on('beforeunload', e => this._disconnect());
     Events.on('pagehide', e => this._disconnect());
+    Events.on('change-display-name', e => this._changedisplayname(e));
+
     document.addEventListener('visibilitychange', e => this._onVisibilityChange());
   }
 
@@ -35,6 +37,9 @@ class ServerConnection {
       case 'peer-left':
         Events.fire('peer-left', msg.peerId);
         break;
+      case 'peer-name-changed':
+        Events.fire('peer-name-changed', msg.peer);
+        break;
       case 'signal':
         Events.fire('signal', msg);
         break;
@@ -44,10 +49,19 @@ class ServerConnection {
       case 'display-name':
         Events.fire('display-name', msg);
         break;
+      case 'display-name-changed':
+        Events.fire('display-name-changed', msg);
+        break;
       default:
         console.error('WS: unkown message type', msg);
     }
   }
+
+  _changedisplayname(e) {
+    this.send({ type: 'changedisplayname', newname: e.detail.text });
+  }
+
+
 
   send(message) {
     if (!this._isConnected()) return;
@@ -402,6 +416,10 @@ class PeersManager {
 
   _onSendText(message) {
     this.peers[message.to].sendText(message.text);
+  }
+
+  _onChangeDisplayName(message) {
+    this.peers[message.to].sendText(message.newName);
   }
 
   _onPeerLeft(peerId) {
